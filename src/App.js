@@ -1,29 +1,25 @@
 import React, { useEffect, useState } from 'react';
+import { Cookies } from 'react-cookie';
+import {BrowserRouter as Router, Routes, Route} from 'react-router-dom';
 import './App.css';
 import Nav from './components/Nav';
 import Login from './pages/Login';
-import Home from './pages/Home.js';
-import { Cookies } from 'react-cookie';
-import {BrowserRouter as Router, Routes, Route} from 'react-router-dom';
+import Home from './pages/Home';
 import Register from './pages/Register';
 import axios from 'axios';
 import PageNotFound from './pages/PageNotFound';
+import Admin from './pages/admin/Admin';
+import User from './pages/user/User';
+
+
+
 const cookies = new Cookies();
 
 function App() {
 
-  const userRoutes =[];
-  const adminRoutes =[];
-  const defaultRoutes =[
-    {path:"/",element:"Home"},
-    {path:"/login",element:"Login"},
-    {path:"/register",element:"Register"},
-  ];
-
   const [state,setState] = useState(false);
   const [isAdmin,setIsAdmin] = useState(false);
   const cdata = cookies.get("user-session");
-  console.log(cdata);
 
     useEffect(()=>{
       if(cdata){
@@ -32,9 +28,10 @@ function App() {
           email:cdata[0].email,
           type:"auth"
         }).then((res)=>{
-          console.log(res);
-          if(res.data[0].res == "success") setState(true); else setState(false);
-          if(res.data[1]) setIsAdmin(true); else setIsAdmin(false);
+          if(res.data[0].res === "success"){ 
+            setState(true);
+            if(cdata.length == 2)  if(cdata[1].isAdmin) setIsAdmin(true);
+          }else setState(false);
         }).catch(err=>console.log(err))
       }else{
         setState(false);setIsAdmin(false);
@@ -43,19 +40,27 @@ function App() {
 
   return (
       <Router>
-        <Nav/>
+        <Nav isAdmin={isAdmin} isLoggedIn={state}/>
         <Routes>
-          {/* {state && isAdmin ? <>
+          {state && isAdmin ? <>
 
-          </>: state ? <>
-          
+            {/* Admin Routes */}
+            <Route path="/admin" element={<Admin/>}/>
+
+          </>: state && !isAdmin ? <>
+            
+            {/* User Routes */}
+            <Route path="/user" element={<User/>}/>
+
           </>: <>
-          
-          </>} */}
-          
-          <Route path="/" element={<Home/>}/>
-          <Route path="/login" element={<Login/>}/>
-          <Route path="/register" element={<Register/>}/>
+
+            {/* Default Routes */}
+            <Route path="/" element={<Home/>}/>
+            <Route path="/login" element={<Login/>}/>
+            <Route path="/register" element={<Register/>}/>
+
+          </>}
+
           <Route path="*" element={<PageNotFound/>}/>
         </Routes>
       </Router>

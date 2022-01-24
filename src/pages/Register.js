@@ -11,7 +11,7 @@ function Register() {
   const [username, setUsername] = useState('')
   const [email, setEmail] = useState('')
   const [pwd, setPwd] = useState('')
-  const [cookie, setCookie, removeCookie] = useCookies('Session')
+  const [cookie, setCookie] = useCookies('Session')
 
   const register = () => {
     axios

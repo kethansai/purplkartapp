@@ -1,15 +1,18 @@
 import axios from 'axios'
 import React, { useState } from 'react'
 import { useCookies } from 'react-cookie'
-import { Link } from 'react-router-dom'
+import { Link,useNavigate  } from 'react-router-dom'
 import Danger from '../components/alerts/Danger'
 import Success from '../components/alerts/Success'
 
 function Login() {
+
+  let navigate = useNavigate();
+
   const [alert,setAlert] = useState(null)
   const [email, setEmail] = useState('')
   const [pwd, setPwd] = useState('')
-  const [cookie, setCookie, removeCookie] = useCookies('Session')
+  const [cookie, setCookie] = useCookies('Session')
 
   const login = () => {
     axios
@@ -23,6 +26,9 @@ function Login() {
         if (res.data[0].res === 'success') {
           setAlert(<Success message={res.data[0].message}/>)
           setCookie('user-session', res.data, { maxAge: 60 * 60 * 24 * 100 })
+          if(res.data.length == 2){
+            if(res.data[1].isAdmin) navigate('/admin'); 
+          }else navigate('/user'); 
         }
         if(res.data[0].res === 'danger') setAlert(<Danger message={res.data[0].message}/>)
       })
