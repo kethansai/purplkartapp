@@ -4,13 +4,9 @@ import { Disclosure, Menu, Transition } from '@headlessui/react'
 import { BellIcon, MenuIcon, XIcon } from '@heroicons/react/outline'
 import { Link,useNavigate } from 'react-router-dom'
 import { useCookies } from 'react-cookie'
+import Logo from '../logo.png'
 
-const navigation = [
-  { name: 'Login', href: '/login', current: true },
-  { name: 'Register', href: '/register', current: false },
-  { name: 'Logout', href: '/logout', current: false },
-  { name: 'Calendar', href: '#', current: false },
-]
+let navigation = []
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
@@ -22,7 +18,27 @@ export default function Nav(props) {
 
   const isLoggedIn = props.isLoggedIn;
   const isAdmin    = props.isAdmin;
-
+  if(isLoggedIn && isAdmin){
+    navigation= [
+      { name: 'Login', href: '/login', current: false },
+      { name: 'Register', href: '/register', current: false },
+      { name: 'Logout', href: '/logout', current: false },
+      { name: 'Calendar', href: '#', current: false },
+    ]
+  }else if(isLoggedIn){
+    navigation = [
+      { name: 'Products', href: '/products', current: false },
+      { name: 'Cart', href: '/cart', current: false },
+      { name: 'Orders', href: '/orders', current: false },
+    ]
+  }else{
+    navigation = [
+      { name: 'Login', href: '/login', current: false },
+      { name: 'Register', href: '/register', current: false },
+      { name: 'Logout', href: '/logout', current: false },
+      { name: 'Products', href: '/products', current: false },
+    ]
+  }
   const [cookie,setCookie,removeCookie] = useCookies('Session');
 
   const logout = ()=>{
@@ -50,12 +66,12 @@ export default function Nav(props) {
                 <div className="flex-shrink-0 flex items-center">
                   <img
                     className="block lg:hidden h-8 w-auto"
-                    src="https://tailwindui.com/img/logos/workflow-mark-indigo-500.svg"
+                    src={Logo}
                     alt="Workflow"
                   />
                   <img
                     className="hidden lg:block h-8 w-auto"
-                    src="https://tailwindui.com/img/logos/workflow-logo-indigo-500-mark-white-text.svg"
+                    src={Logo}
                     alt="Workflow"
                   />
                 </div>
